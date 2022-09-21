@@ -7,18 +7,33 @@ import Button from '@mui/material/Button';
 import Radio from '@mui/material/Radio';
 import {DataGrid} from '@mui/x-data-grid';
 import {SEMESTER_LIST} from '../constants.js'
+import {SERVER_URL} from '../constants.js'
 
 // user selects from a list of  (year, semester) values
 class Semester extends Component {
     constructor(props) {
       super(props);
       this.state = {selected: SEMESTER_LIST.length-1 };
+      this.handleChange = this.handleChange.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event) {
+      this.setState({[event.target.name]: event.target.value});
     }
  
    onRadioClick = (event) => {
     console.log("Semester.onRadioClick "+JSON.stringify(event.target.value));
     this.setState({selected: event.target.value});
-  }
+    }
+
+    handleSubmit(event) {
+      fetch(`${SERVER_URL}/addStudent?name=${this.state.name}&email=${this.state.email}`, {method: 'GET'})
+      .then((response) => response.json())
+
+      alert(`Astudent was added: ${this.state.name}`);
+      event.preventDefault();
+    }
   
   render() {    
       const icolumns = [
@@ -62,6 +77,21 @@ class Semester extends Component {
                 variant="outlined" color="primary" style={{margin: 10}}>
                 Get Schedule
               </Button>
+              <br/>
+              <br/>
+              <h4>Add Student: </h4>             
+
+            <form onSubmit={this.handleSubmit}>
+              <label>
+                Name:
+                <input type="text" name="name" value={this.state.name} onChange={this.handleChange} />
+              </label> &nbsp;
+              <label>
+                Email:
+                <input type="text" name="email" value={this.state.email} onChange={this.handleChange} />
+              </label> &nbsp;
+              <input type="submit" value="Submit" />
+            </form>
           </div>
       </div>
     )
